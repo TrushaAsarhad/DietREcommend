@@ -7,7 +7,7 @@ import pandas as pd
 model = joblib.load('diet_recommender_model.pkl')
 
 # Load the dataset (ensure this is available in your app directory)
-df = pd.read_csv('your_dataset.csv')
+df = pd.read_csv('All_Diets.csv')
 
 # Function to recommend recipes based on user input
 def recommend_recipe(user_recipe):
