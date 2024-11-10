@@ -22,6 +22,7 @@ st.title("Diet Recommender System")
 diet_type_input = st.selectbox('Select Diet Type:', df['Diet_type'].unique())
 cuisine_input = st.selectbox('Select Cuisine Type:', df['Cuisine_type'].unique())
 
+# Slider inputs for nutrient range
 protein_min = st.slider('Min Protein (g):', 0, 50, 10)
 protein_max = st.slider('Max Protein (g):', 0, 50, 30)
 carbs_min = st.slider('Min Carbs (g):', 0, 100, 20)
@@ -38,10 +39,18 @@ filtered_recipes = df[
     (df['Fat(g)'] >= fat_min) & (df['Fat(g)'] <= fat_max)
 ]
 
-# Display recommendations
-if st.button("Get Recommendations"):
-    user_recipe = np.array([[protein_min, carbs_min, fat_min]])
-    recommended = recommend_recipe(user_recipe)
-    st.write("Recommended Recipes:")
-    st.dataframe(recommended[['Recipe_name', 'Cuisine_type', 'Protein(g)', 'Carbs(g)', 'Fat(g)']])
+# Display filtered dataset to help with debugging
+st.write(f"Filtered recipes count: {len(filtered_recipes)}")
+st.write(filtered_recipes[['Recipe_name', 'Cuisine_type', 'Protein(g)', 'Carbs(g)', 'Fat(g)']])
 
+# Ensure there are enough filtered recipes before applying the model
+if len(filtered_recipes) > 0:
+    # Take the average of the filtered recipes (or use one recipe) to generate recommendations
+    avg_recipe = filtered_recipes[['Protein(g)', 'Carbs(g)', 'Fat(g)']].mean(axis=0).values.reshape(1, -1)
+
+    # Recommend based on the filtered average recipe
+    recommended = recommend_recipe(avg_recipe)
+    st.write("Recommended Recipes based on input:")
+    st.dataframe(recommended[['Recipe_name', 'Cuisine_type', 'Protein(g)', 'Carbs(g)', 'Fat(g)']])
+else:
+    st.write("No recipes match your criteria, try adjusting your filters.")
